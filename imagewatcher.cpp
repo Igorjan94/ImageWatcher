@@ -25,7 +25,7 @@ imageWatcher::imageWatcher(QString directory, QString result, QWidget *parent) :
     std::cout << directory.toUtf8().data() << std::endl;
     if (resultDirectory[resultDirectory.size() - 1] != '/')
         resultDirectory.append('/');
-    QDir ddd(resultDirectory);
+    ddd = QDir(resultDirectory);
     if (!ddd.exists())
         ddd.mkpath(resultDirectory);
     setupUi(this);
@@ -97,6 +97,18 @@ void imageWatcher::prev()
     stack.push({d, i});
 }
 
+QString getFileName(QString s)
+{
+    if (s.endsWith(" added"))
+        s.chop(6);
+    QString b = "";
+    int i = s.size() - 1;
+    while (i >= 0 && s[i] != '/')
+        b.append(s[i--]);
+    std::reverse(b.begin(), b.end());
+    return b;
+}
+
 void imageWatcher::setImage(QString s, bool f)
 {
     if (!f)
@@ -104,6 +116,9 @@ void imageWatcher::setImage(QString s, bool f)
         name->setText(s);
     else
         im = im.transformed(myTransform);
+
+    if (ddd.entryList().contains(getFileName(s)))
+        name->setText(name->text().append(" added"));
     sc->clear();
     sc->addPixmap(QPixmap::fromImage(im));
     rect = sc->itemsBoundingRect();
@@ -149,13 +164,29 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
             std::cout << s.toUtf8().data() << std::endl;
             if (system(s.toUtf8().data()) == 0)
                 name->setText(name->text().append(" added")),
-                std::cout << "added\n";
+                std::cout << "added\n",
+                ddd = QDir(resultDirectory);
             break;
         }
         case Qt::Key_R:
         {
             std::cout << "R";
             setImage("", true);
+            break;
+        }
+        case Qt::Key_Delete:
+        {
+            std::cout << "Delete";
+            if (ddd.entryList().contains(getFileName(name->text())))
+            {
+                ddd = QDir(resultDirectory);
+                QString t = name->text();
+                t.chop(6);
+                name->setText(t);
+                QString q = resultDirectory;
+                q.append(getFileName(name->text()));
+                unlink(q.toUtf8().data());
+            }
             break;
         }
         case Qt::Key_E:

@@ -16,7 +16,7 @@ public:
     void keyPressEvent(QKeyEvent *);
 
 private:
-    QDir dir;
+    QDir dir, ddd;
     QString resultDirectory;
     std::stack<std::pair<QDir, int>> stack, old;
     QGraphicsScene* sc;

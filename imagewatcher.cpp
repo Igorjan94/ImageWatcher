@@ -20,6 +20,7 @@ imageWatcher::imageWatcher(QString directory, QString result, QWidget *parent) :
     QDialog(parent),
     dir(directory)
 {
+    f = 0;
     resultDirectory = e(result);
     directory = e(directory);
     std::cout << directory.toUtf8().data() << std::endl;
@@ -48,13 +49,13 @@ void imageWatcher::parser()
     {
         if (d.entryList().size() > 2)
             old.push({stack.top().first, stack.top().second});
-        if (stack.size() > 1)
-            stack.pop();
         if (stack.size() == 1)
         {
             name->setText("THE END. No images to watch:(");
             return;
         }
+        if (stack.size() > 1)
+            stack.pop();
         parser();
         return;
     }
@@ -71,7 +72,7 @@ void imageWatcher::parser()
         parser();
         return;
     }
-    setImage(q.absoluteFilePath(), false);
+    setImage(q.absoluteFilePath());
     stack.pop();
     stack.push({d, i});
 }
@@ -92,7 +93,7 @@ void imageWatcher::prev()
     }
     QFileInfo q = d.entryInfoList().at(i);
     std::cout << " " << q.fileName().toUtf8().data() << std::endl;
-    setImage(q.absoluteFilePath(), false);
+    setImage(q.absoluteFilePath());
     stack.pop();
     stack.push({d, i});
 }
@@ -109,25 +110,27 @@ QString getFileName(QString s)
     return b;
 }
 
-void imageWatcher::setImage(QString s, bool f)
+void imageWatcher::setImage(QString s)
 {
-    if (!f)
-        im.load(s),
-        name->setText(s);
-    else
-        im = im.transformed(myTransform);
-
     if (ddd.entryList().contains(getFileName(s)))
         name->setText(name->text().append(" added"));
     sc->clear();
-    sc->addPixmap(QPixmap::fromImage(im));
+    if (f == 0)
+    {
+        im.load(s);
+        name->setText(s);
+        sc->addPixmap(QPixmap::fromImage(im));
+    }
+    else
+    {
+        //im = im.scaled(im.height() * 2, im.width());
+        im = im.transformed(myTransform);
+        sc->addPixmap(QPixmap::fromImage(im));
+    }
     rect = sc->itemsBoundingRect();
-    const double eps = 1;
-    double w = rect.width(),
-           h = rect.height();
-    if (!f)
-        rect.setWidth(w * eps),
-        rect.setHeight(h * eps);
+    double w = rect.width();
+    if (f % 2)
+        rect.setWidth(w * 2.29229);
     image->setScene(sc);
     image->fitInView(rect);
 }
@@ -138,12 +141,14 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
     {
         case Qt::Key_K:
         {
+            f = 0;
             parser();
             std::cout << "K";
             break;
         }
         case Qt::Key_J:
         {
+            f = 0;
             prev();
             std::cout << "J";
             break;
@@ -171,7 +176,8 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
         case Qt::Key_R:
         {
             std::cout << "R";
-            setImage("", true);
+            f++;
+            setImage("");
             break;
         }
         case Qt::Key_Delete:
@@ -192,9 +198,12 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
         case Qt::Key_E:
         {
             std::cout << "R";
-            setImage("", true);
-            setImage("", true);
-            setImage("", true);
+            f++;
+            setImage("");
+            f++;
+            setImage("");
+            f++;
+            setImage("");
             break;
         }
         case Qt::Key_S:

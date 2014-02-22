@@ -23,9 +23,10 @@ private:
     QImage im;
     QRectF rect;
     QTransform myTransform;
-    void setImage(QString s, bool f);
+    void setImage(QString s);
     void parser();
     void prev();
+    int f;
 };
 
 #endif // IMAGEWATCHER_H

@@ -14,3 +14,5 @@ r - rotate 90 deg
 e - rotate -90 deg
 
 s - skip current directory
+
+delete - delete symlink if it was added by mistake

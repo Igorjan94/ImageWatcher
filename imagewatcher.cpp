@@ -16,29 +16,42 @@ QString e(QString src)
     return dest;
 }
 
+<<<<<<< HEAD
 void writeln(QString s)
 {
     std::cout << s.toUtf8().data() << std::endl;
 }
 
+=======
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
 imageWatcher::imageWatcher(QString directory, QString result, QWidget *parent) :
     QDialog(parent),
     dir(directory)
 {
     f = 0;
+<<<<<<< HEAD
     resultDirectory = result;
     writeln(directory);
     writeln(resultDirectory);
+=======
+    resultDirectory = e(result);
+    directory = e(directory);
+    std::cout << directory.toUtf8().data() << std::endl;
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
     if (resultDirectory[resultDirectory.size() - 1] != '/')
         resultDirectory.append('/');
     ddd = QDir(resultDirectory);
     if (!ddd.exists())
+<<<<<<< HEAD
     {
         if (ddd.mkpath(resultDirectory) == 1)
             std::cout << "No such directory, created a new one\n";
     }
         else
             std::cout << "OK, directory exists\n";
+=======
+        ddd.mkpath(resultDirectory);
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
     setupUi(this);
     stack.push({dir, 1});
     myTransform.rotate(90);
@@ -70,7 +83,11 @@ void imageWatcher::parser()
         return;
     }
     QFileInfo q = d.entryInfoList().at(i);
+<<<<<<< HEAD
     writeln(q.fileName());
+=======
+    std::cout << " " << q.fileName().toUtf8().data() << std::endl;
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
     if (q.isDir() && q.fileName() != "." && q.fileName() != "..")
     {
         if (!d.entryInfoList().at(i - 1).isDir())
@@ -102,7 +119,11 @@ void imageWatcher::prev()
         i = stack.top().second - 1;
     }
     QFileInfo q = d.entryInfoList().at(i);
+<<<<<<< HEAD
     writeln(q.fileName());
+=======
+    std::cout << " " << q.fileName().toUtf8().data() << std::endl;
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
     setImage(q.absoluteFilePath());
     stack.pop();
     stack.push({d, i});
@@ -122,21 +143,32 @@ QString getFileName(QString s)
 
 void imageWatcher::setImage(QString s)
 {
+<<<<<<< HEAD
 //    writeln(getFileName(s).append(" name"));
 //    QStringList q = ddd.entryList();
   //  for (QString s : q)
     //    writeln(s.append("!"));
     name->setText(s);
+=======
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
     if (ddd.entryList().contains(getFileName(s)))
         name->setText(name->text().append(" added"));
     sc->clear();
     if (f == 0)
     {
         im.load(s);
+<<<<<<< HEAD
+=======
+        name->setText(s);
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
         sc->addPixmap(QPixmap::fromImage(im));
     }
     else
     {
+<<<<<<< HEAD
+=======
+        //im = im.scaled(im.height() * 2, im.width());
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
         im = im.transformed(myTransform);
         sc->addPixmap(QPixmap::fromImage(im));
     }
@@ -175,11 +207,19 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
             ///TODO: make crossplatform
             QString s = "ln --symbolic ";
             s.append(d.absoluteFilePath().toUtf8().data());
+<<<<<<< HEAD
             s.append(" ");
             s.append(resultDirectory);
             s = ::e(s);
             s.append(d.fileName());
             writeln(s);
+=======
+            s = ::e(s);
+            s.append(" ");
+            s.append(resultDirectory);
+            s.append(d.fileName());
+            std::cout << s.toUtf8().data() << std::endl;
+>>>>>>> 83bb776fffe2b52609ca9f1da3e0ba098a4c1216
             if (system(s.toUtf8().data()) == 0)
                 name->setText(name->text().append(" added")),
                 std::cout << "added\n",

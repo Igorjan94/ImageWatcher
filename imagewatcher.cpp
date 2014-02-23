@@ -9,7 +9,7 @@ QString e(QString src)
     QString dest;
     for (int i = 0; i < src.size(); i++)
     {
-        if (src[i] == '(' || src[i] == ')' || src[i] == '\"')
+        if (src[i] == '(' || src[i] == ')' || src[i] == '\"' || src[i] == ' ')
             dest.append("\\");
         dest.append(src[i]);
     }
@@ -142,7 +142,7 @@ void imageWatcher::setImage(QString s)
     }
     rect = sc->itemsBoundingRect();
     double w = rect.width();
-    if (f % 2)
+    if (f % 2 || w < rect.height())
         rect.setWidth(w * 2.29229);
     image->setScene(sc);
     image->fitInView(rect);
@@ -174,10 +174,9 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
             QFileInfo d = stack.top().first.entryInfoList().at(stack.top().second);
             ///TODO: make crossplatform
             QString s = "ln --symbolic ";
-            s.append(d.absoluteFilePath().toUtf8().data());
+            s.append(::e(d.absoluteFilePath().toUtf8().data()));
             s.append(" ");
-            s.append(resultDirectory);
-            s = ::e(s);
+            s.append(::e(resultDirectory));
             s.append(d.fileName());
             writeln(s);
             if (system(s.toUtf8().data()) == 0)

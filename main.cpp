@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     if (argc <= 2)
     {
         std::cout << "Usage: directory destination\n";
-        imageWatcher w("/home/igorjan/documents/photos", "/home/igorjan/documents/photos/qwre/");
+        imageWatcher w("/home/igorjan/documents/фотик(01.2014-...)/", "/home/igorjan/documents/фотик(01.2014-...)/избр2");
         w.show();
         return a.exec();
     }

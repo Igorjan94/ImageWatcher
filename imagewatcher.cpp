@@ -74,7 +74,7 @@ void imageWatcher::parser()
     if (q.isDir() && q.fileName() != "." && q.fileName() != "..")
     {
         if (!d.entryInfoList().at(i - 1).isDir())
-            old.push({stack.top().first, stack.top().second + 1});
+            old.push({stack.top().first, stack.top().second});
         stack.pop();
         stack.push({d, i});
         d.cd(q.fileName());
@@ -96,10 +96,13 @@ void imageWatcher::prev()
         if (stack.size() == 1 || old.empty())
             return;
         stack.pop();
+        auto temp = stack.top();
+        stack.pop();
+        stack.push({temp.first, temp.second - 1});
         stack.push({old.top().first, old.top().second});
         old.pop();
         d = stack.top().first;
-        i = stack.top().second - 1;
+        i = stack.top().second;
     }
     QFileInfo q = d.entryInfoList().at(i);
     writeln(q.fileName());
@@ -126,7 +129,8 @@ void imageWatcher::setImage(QString s)
 //    QStringList q = ddd.entryList();
   //  for (QString s : q)
     //    writeln(s.append("!"));
-    name->setText(s);
+    if (s != "")
+        name->setText(s);
     if (ddd.entryList().contains(getFileName(s)))
         name->setText(name->text().append(" added"));
     sc->clear();
@@ -222,7 +226,16 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
         {
             std::cout << "S";
             if (stack.size() > 1)
+            {
+                old.push(stack.top());
                 stack.pop();
+            }
+            break;
+        }
+        case Qt::Key_O:
+        {
+            std::cout << "O";
+
             break;
         }
     }

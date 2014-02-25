@@ -95,17 +95,18 @@ void imageWatcher::parser()
 
 void imageWatcher::getDst()
 {
-    resultDirectory = QFileDialog::getExistingDirectory();
+    resultDirectory = QFileDialog::getExistingDirectory(0, "Directory to symlinks", "/home/");
     checkResultDirectory();
     writeln("result directory: " + resultDirectory);
 }
 
 void imageWatcher::getSrc()
 {
-    QString directory = QFileDialog::getExistingDirectory();
+    QString directory = QFileDialog::getExistingDirectory(0, "Directory to watch photos", "/home/");
     while (!stack.empty())
         stack.pop();
     stack.push({QDir(directory), 1});
+    parser();
     writeln("Source directory: " + directory);
 }
 
@@ -147,25 +148,16 @@ QString getFileName(QString s)
 
 void imageWatcher::setImage(QString s)
 {
-//    writeln(getFileName(s).append(" name"));
-//    QStringList q = ddd.entryList();
-  //  for (QString s : q)
-    //    writeln(s.append("!"));
     if (s != "")
         name->setText(s);
     if (ddd.entryList().contains(getFileName(s)))
         name->setText(name->text().append(" added"));
     sc->clear();
     if (f == 0)
-    {
         im.load(s);
-        sc->addPixmap(QPixmap::fromImage(im));
-    }
     else
-    {
         im = im.transformed(myTransform);
-        sc->addPixmap(QPixmap::fromImage(im));
-    }
+    sc->addPixmap(QPixmap::fromImage(im));
     rect = sc->itemsBoundingRect();
     double w = rect.width();
     if (f % 2 || w < rect.height())
@@ -252,7 +244,8 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
             std::cout << "O";
             QString temp = "xdg-open ";
             temp.append(::e(name->text()));
-            system(temp.toUtf8().data());
+            if (system(temp.toUtf8().data()) == 0)
+                writeln("Ok viewed");
             break;
         }
     }

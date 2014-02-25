@@ -250,7 +250,9 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
         case Qt::Key_O:
         {
             std::cout << "O";
-
+            QString temp = "xdg-open ";
+            temp.append(::e(name->text()));
+            system(temp.toUtf8().data());
             break;
         }
     }

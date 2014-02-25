@@ -26,7 +26,11 @@ private:
     void setImage(QString s);
     void parser();
     void prev();
+    void checkResultDirectory();
     int f;
+private slots:
+    void getSrc();
+    void getDst();
 };
 
 #endif // IMAGEWATCHER_H

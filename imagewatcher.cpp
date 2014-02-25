@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stack>
 #include <unistd.h>
+#include <QFileDialog>
 
 QString e(QString src)
 {
@@ -21,14 +22,8 @@ void writeln(QString s)
     std::cout << s.toUtf8().data() << std::endl;
 }
 
-imageWatcher::imageWatcher(QString directory, QString result, QWidget *parent) :
-    QDialog(parent),
-    dir(directory)
+void imageWatcher::checkResultDirectory()
 {
-    f = 0;
-    resultDirectory = result;
-    writeln(directory);
-    writeln(resultDirectory);
     if (resultDirectory[resultDirectory.size() - 1] != '/')
         resultDirectory.append('/');
     ddd = QDir(resultDirectory);
@@ -39,6 +34,17 @@ imageWatcher::imageWatcher(QString directory, QString result, QWidget *parent) :
     }
         else
             std::cout << "OK, directory exists\n";
+}
+
+imageWatcher::imageWatcher(QString directory, QString result, QWidget *parent) :
+    QDialog(parent),
+    dir(directory)
+{
+    f = 0;
+    resultDirectory = result;
+    writeln(directory);
+    writeln(resultDirectory);
+    checkResultDirectory();
     setupUi(this);
     stack.push({dir, 1});
     myTransform.rotate(90);
@@ -85,6 +91,22 @@ void imageWatcher::parser()
     setImage(q.absoluteFilePath());
     stack.pop();
     stack.push({d, i});
+}
+
+void imageWatcher::getDst()
+{
+    resultDirectory = QFileDialog::getExistingDirectory();
+    checkResultDirectory();
+    writeln("result directory: " + resultDirectory);
+}
+
+void imageWatcher::getSrc()
+{
+    QString directory = QFileDialog::getExistingDirectory();
+    while (!stack.empty())
+        stack.pop();
+    stack.push({QDir(directory), 1});
+    writeln("Source directory: " + directory);
 }
 
 void imageWatcher::prev()
@@ -176,14 +198,7 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
             if (name->text().endsWith(" added"))
                 break;
             QFileInfo d = stack.top().first.entryInfoList().at(stack.top().second);
-            ///TODO: make crossplatform
-            QString s = "ln --symbolic ";
-            s.append(::e(d.absoluteFilePath().toUtf8().data()));
-            s.append(" ");
-            s.append(::e(resultDirectory));
-            s.append(d.fileName());
-            writeln(s);
-            if (system(s.toUtf8().data()) == 0)
+            if (QFile::link(d.absoluteFilePath().toUtf8().data(), resultDirectory + d.fileName()))
                 name->setText(name->text().append(" added")),
                 std::cout << "added\n",
                 ddd = QDir(resultDirectory);
@@ -207,7 +222,7 @@ void imageWatcher::keyPressEvent(QKeyEvent *e)
                 name->setText(t);
                 QString q = resultDirectory;
                 q.append(getFileName(name->text()));
-                unlink(q.toUtf8().data());
+                QFile(q.toUtf8().data()).remove();
             }
             break;
         }
